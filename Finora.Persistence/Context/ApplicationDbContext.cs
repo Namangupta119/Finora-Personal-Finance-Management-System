@@ -15,6 +15,8 @@ namespace Finora.Persistence.Context
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Profile> Profiles => Set<Profile>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<UserSetting> UserSettings => Set<UserSetting>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,5 +1,7 @@
+using Finora.Application.Common.Settings;
 using Finora.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Finora.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
