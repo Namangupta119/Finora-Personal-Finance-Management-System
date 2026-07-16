@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Finora.Application/Finora.Application.csproj" />
+  <Project Path="Finora.Domain/Finora.Domain.csproj" />
+  <Project Path="Finora.Infrastructure/Finora.Infrastructure.csproj" />
+  <Project Path="Finora.Persistence/Finora.Persistence.csproj" />
+  <Project Path="Finora/Finora.csproj" />
+</Solution>
