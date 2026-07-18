@@ -32,5 +32,10 @@ namespace Finora.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<User?> FindByEmailAsync(string email)
+        {
+            return await _context.Users.Include(x => x.RefreshTokens).FirstOrDefaultAsync(x => x.Email == email);
+        }
     }
 }

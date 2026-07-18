@@ -9,6 +9,6 @@ namespace Finora.Application.Interfaces.Services
     {
         Task<RegisterResponse> RegisterAsync(RegisterRequest request);
         Task<LoginResponse> LoginAsync(LoginRequest request);
-        Task<RefreshTokenRequest> RefreshTokenAsync(RefreshTokenRequest request);
+        Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
     }
 }

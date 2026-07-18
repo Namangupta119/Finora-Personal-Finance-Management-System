@@ -9,6 +9,7 @@ namespace Finora.Application.Interfaces.Repositories
     {
         Task<bool> ExistsByEmailAsync(string email);
         Task<User?> GetByEmailAsync(string email);
+        Task<User?> FindByEmailAsync(string email);
         Task AddAsync(User user);
         Task SaveChangesAsync();
     }

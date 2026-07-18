@@ -1,4 +1,5 @@
 ﻿using Finora.Application.DTOs.Authentication;
+using Finora.Application.Exceptions;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Security;
 using Finora.Application.Interfaces.Services;
@@ -15,22 +16,84 @@ namespace Finora.Infrastructure.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtService _jwtService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public AuthenticationService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtService jwtService)
+        public AuthenticationService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtService jwtService, IRefreshTokenRepository refreshTokenRepository)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public Task<LoginResponse> LoginAsync(LoginRequest request)
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.FindByEmailAsync(request.Email);
+
+            if (user == null)
+                throw new Exception("Invalid email or password.");
+
+            var result = _passwordHasher.VerifyPassword(user, request.Password, user.PasswordHash);
+
+            if (!result)
+                throw new UnauthorizedException("Invalid email or password.");
+
+            if (!user.IsActive)
+                throw new UnauthorizedException("Account is disabled.");
+
+            var accessToken = _jwtService.GenerateAccessToken(user);
+
+            var refreshToken = _jwtService.GenerateRefreshToken(user, "Web");
+
+            user.RefreshTokens.Add(refreshToken);
+            user.LastLoginOn = DateTimeOffset.UtcNow;
+
+            await _userRepository.SaveChangesAsync();
+
+            return new LoginResponse
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token,
+                ExpiresOn = refreshToken.ExpiresOn,
+                UserId = user.Id,
+                Email = user.Email
+            };
         }
 
-        public Task<RefreshTokenRequest> RefreshTokenAsync(RefreshTokenRequest request)
+        public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
         {
-            throw new NotImplementedException();
+            var refreshToken = await _refreshTokenRepository.FindByTokenAsync(request.RefreshToken);
+
+            if (refreshToken == null)
+                throw new UnauthorizedException("No Token found");
+
+
+            if (refreshToken.ExpiresOn <= DateTimeOffset.UtcNow)
+                throw new UnauthorizedException("Your Token has Expired");
+
+            if (refreshToken.RevokedOn != null)
+                throw new UnauthorizedException("You token has revoked");
+
+            var user = refreshToken.User;
+
+            if (!user.IsActive)
+                throw new UnauthorizedException("Your account has been disbled.");
+
+            var accessToken = _jwtService.GenerateAccessToken(user);
+            var newRefreshToken = _jwtService.GenerateRefreshToken(user, "Web");
+
+            refreshToken.RevokedOn = DateTimeOffset.UtcNow;
+            user.RefreshTokens.Add(newRefreshToken);
+
+            await _refreshTokenRepository.SaveChangesAsync();
+
+            return new RefreshTokenResponse
+            {
+                AccessToken = accessToken,
+                RefreshToken = newRefreshToken.Token,
+                ExpiresOn = newRefreshToken.ExpiresOn
+            };
+                
         }
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
@@ -39,7 +102,7 @@ namespace Finora.Infrastructure.Services
 
             if (emailExists)
             {
-                throw new Exception("An account with this email already exists.");
+                throw new ConflictException("Email already exists.");
             }
 
             var user = new User

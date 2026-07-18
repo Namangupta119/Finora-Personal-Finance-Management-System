@@ -2,6 +2,7 @@ using Finora.Application.Common.Settings;
 using Finora.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Finora.Infrastructure.Extensions;
+using Finora.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -26,6 +27,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
