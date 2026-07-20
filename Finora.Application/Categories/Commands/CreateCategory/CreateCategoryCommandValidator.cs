@@ -19,7 +19,7 @@ namespace Finora.Application.Categories.Commands.CreateCategory
             .MustAsync(async (name, CancellationToken) =>
             {
                 return !await categoryRepository.ExistsAsync(name, currentUserService.UserId);
-            }).WithMessage("Category name already exist");
+            }).WithMessage("Category name already exists.");
 
             RuleFor(x => x.Description)
             .MaximumLength(250).WithMessage("Description cannot exceed 250 characters.");

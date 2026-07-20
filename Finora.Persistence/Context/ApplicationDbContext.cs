@@ -20,6 +20,7 @@ namespace Finora.Persistence.Context
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<UserSetting> UserSettings => Set<UserSetting>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<Expense> Expenses => Set<Expense>();
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
