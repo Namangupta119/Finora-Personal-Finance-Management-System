@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using FluentValidation;
 
 namespace Finora.Middleware
 {
@@ -19,6 +20,25 @@ namespace Finora.Middleware
             }
             catch(Exception ex)
             {
+                context.Response.ContentType = "application/json";
+
+                if (ex is ValidationException validationException)
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                    var errors = validationException.Errors.GroupBy(x => x.PropertyName).ToDictionary(g => g.Key, g => g.Select(x => x.ErrorMessage).ToArray());
+
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        StatusCode = 400,
+                        Message = "Validation failed.",
+                        Errors = errors
+                    });
+
+                    return;
+                }
                 var statusCode = ex switch
                 {
                     UnauthorizedException => StatusCodes.Status401Unauthorized,
@@ -28,7 +48,6 @@ namespace Finora.Middleware
                 };
 
                 context.Response.StatusCode = statusCode;
-                context.Response.ContentType = "application/json";
 
                 await context.Response.WriteAsJsonAsync(new
                 {

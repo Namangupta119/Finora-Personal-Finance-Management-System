@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Finora.Persistence.Seed
+namespace Finora.Persistence.Seed.Common
 {
     public class SeedConstants
     {

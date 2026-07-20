@@ -1,10 +1,7 @@
 ﻿using Finora.Persistence.Context;
 using Finora.Persistence.Seed.Categories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Finora.Persistence.Seed
 {
@@ -24,7 +21,7 @@ namespace Finora.Persistence.Seed
 
         private async Task SeedCategoriesAsync()
         {
-            if (await _context.Categories.AnyAsync()) 
+            if (await _context.Categories.AnyAsync())
                 return;
 
             var categories = CategorySeed.GetCategories();

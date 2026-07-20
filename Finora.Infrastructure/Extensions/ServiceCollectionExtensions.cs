@@ -1,19 +1,20 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Common.Settings;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Security;
 using Finora.Application.Interfaces.Services;
 using Finora.Infrastructure.Repositories;
 using Finora.Infrastructure.Security;
-using Microsoft.IdentityModel.Tokens;
 using Finora.Infrastructure.Services;
+using Finora.Persistence.Seed;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Finora.Application.Common.Settings;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Finora.Infrastructure.Extensions
 {
@@ -27,10 +28,12 @@ namespace Finora.Infrastructure.Extensions
             //Repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             //Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<ApplicationDbSeeder>();
 
             services.AddHttpContextAccessor();
 
