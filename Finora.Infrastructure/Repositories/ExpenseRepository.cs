@@ -34,7 +34,9 @@ namespace Finora.Infrastructure.Repositories
 
         public void Remove(Expense expense)
         {
-            _context.Expenses.Remove(expense);
+            expense.IsArchived = true;
+
+            _context.Expenses.Update(expense);
         }
 
         public async Task SaveChangesAsync()

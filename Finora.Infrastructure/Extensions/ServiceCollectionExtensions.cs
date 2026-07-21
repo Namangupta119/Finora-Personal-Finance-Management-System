@@ -30,6 +30,7 @@ namespace Finora.Infrastructure.Extensions
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            services.AddScoped<IIncomeRepository, IncomeRepository>();
 
             //Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();
