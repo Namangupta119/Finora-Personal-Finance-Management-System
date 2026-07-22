@@ -16,8 +16,4 @@
     <ProjectReference Include="..\Finora.Domain\Finora.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\DTOs\" />
-  </ItemGroup>
-
 </Project>

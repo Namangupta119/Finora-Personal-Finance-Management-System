@@ -32,6 +32,10 @@ namespace Finora.Infrastructure.Extensions
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
             services.AddScoped<IIncomeRepository, IncomeRepository>();
             services.AddScoped<IBudgetRepository, BudgetRepository>();
+            services.AddScoped<IGoalRepository, GoalRepository>();
+            services.AddScoped<IGoalCategoryRepository, GoalCategoryRepository>();
+            services.AddScoped<IGoalContributionRepository, GoalContributionRepository>();
+
             //Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtService, JwtService>();

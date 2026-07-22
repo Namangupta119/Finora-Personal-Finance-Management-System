@@ -1,5 +1,6 @@
 ﻿using Finora.Persistence.Context;
 using Finora.Persistence.Seed.Categories;
+using Finora.Persistence.Seed.GoalCategories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -17,6 +18,7 @@ namespace Finora.Persistence.Seed
         public async Task SeedAsync()
         {
             await SeedCategoriesAsync();
+            await SeedGoalCategoriesAsync();
         }
 
         private async Task SeedCategoriesAsync()
@@ -27,6 +29,18 @@ namespace Finora.Persistence.Seed
             var categories = CategorySeed.GetCategories();
 
             await _context.Categories.AddRangeAsync(categories);
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task SeedGoalCategoriesAsync()
+        {
+            if (await _context.GoalCategories.AnyAsync())
+                return;
+
+            var goalCategories = GoalCategorySeed.GetGoalCategories();
+
+            await _context.GoalCategories.AddRangeAsync(goalCategories);
 
             await _context.SaveChangesAsync();
         }

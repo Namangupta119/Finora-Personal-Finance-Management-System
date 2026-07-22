@@ -2,9 +2,6 @@
 using Finora.Domain.Entities;
 using Finora.Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Finora.Persistence.Context
 {
@@ -23,6 +20,9 @@ namespace Finora.Persistence.Context
         public DbSet<Expense> Expenses => Set<Expense>();
         public DbSet<Income> Incomes => Set<Income>();
         public DbSet<Budget> Budgets => Set<Budget>();
+        public DbSet<Goal> Goals => Set<Goal>();
+        public DbSet<GoalCategory> GoalCategories => Set<GoalCategory>();
+        public DbSet<GoalContribution> GoalContributions => Set<GoalContribution>();
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
