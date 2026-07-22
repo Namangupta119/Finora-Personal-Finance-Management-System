@@ -1,4 +1,5 @@
-﻿using Finora.Domain.Entities;
+﻿using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,9 @@ namespace Finora.Application.Interfaces.Repositories
         Task AddAsync(Income income);
         void Update(Income income);
         void Remove(Income income);
+        Task<decimal> GetTotalIncomeAsync(Guid userId);
+        Task<IReadOnlyList<Income>> GetRecentIncomesAsync(Guid userId, int count);
+        Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyIncomeAsync(Guid userId);
         Task SaveChangesAsync();
     }
 }

@@ -1,10 +1,9 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Features.Dashboard.Queries.GetExpenseAnalytics;
+using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
 using Finora.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Finora.Infrastructure.Repositories
 {
@@ -47,6 +46,39 @@ namespace Finora.Infrastructure.Repositories
         public void Update(Expense expense)
         {
             _context.Expenses.Update(expense);
+        }
+
+        public async Task<decimal> GetTotalExpenseAsync(Guid userId)
+        {
+            return await _context.Expenses.Where(x => x.UserId == userId && !x.IsArchived).SumAsync(x => x.Amount);
+        }
+
+        public async Task<IReadOnlyList<Expense>> GetRecentExpensesAsync(Guid userId, int count)
+        {
+            return await _context.Expenses.Where(x => !x.IsArchived && x.UserId != userId).OrderByDescending(x => x.ExpenseDate).Take(count).ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<ExpenseAnalyticsDto>> GetExpenseAnalyticsAsync(Guid userId)
+        {
+            return await _context.Expenses.Where(x => !x.IsArchived && x.UserId == userId).GroupBy(x => x.Category.Name).Select(g => new ExpenseAnalyticsDto
+            {
+                Category = g.Key,
+                TotalAmount = g.Sum(x => x.Amount)
+            }).OrderByDescending(x => x.TotalAmount).ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyExpenseAsync(Guid userId)
+        {
+            return await _context.Expenses.Where(x => !x.IsArchived && x.UserId == userId).GroupBy(x => new
+            {
+                x.ExpenseDate.Year,
+                x.ExpenseDate.Month
+            }).Select(g => new MonthlyAmountDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalAmount = g.Sum(x => x.Amount)
+            }).OrderBy(x => x.Year).ThenBy(x => x.Month).ToListAsync();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Features.Dashboard.GetRecentTransactions;
+using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
 using Finora.Persistence.Context;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -49,5 +52,30 @@ namespace Finora.Infrastructure.Repositories
         {
             _context.Incomes.Update(income);
         }
+
+        public async Task<decimal> GetTotalIncomeAsync(Guid userId)
+        {
+            return await _context.Incomes.Where(x => x.UserId == userId && !x.IsArchived).SumAsync(x => x.Amount);
+        }
+
+        public async Task<IReadOnlyList<Income>> GetRecentIncomesAsync(Guid userId, int count)
+        {
+            return await _context.Incomes.Where(x => !x.IsArchived && x.UserId == userId).OrderByDescending(x => x.IncomeDate).Take(count).ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyIncomeAsync(Guid userId)
+        {
+            return await _context.Incomes.Where(x => !x.IsArchived && x.UserId == userId).GroupBy(x => new
+            {
+                x.IncomeDate.Year,
+                x.IncomeDate.Month
+            }).Select(g => new MonthlyAmountDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalAmount = g.Sum(x => x.Amount)
+            }).OrderBy(x => x.Year).ThenBy(x => x.Month).ToListAsync();
+        }
+
     }
 }

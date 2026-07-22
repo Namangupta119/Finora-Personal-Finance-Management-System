@@ -22,6 +22,7 @@ namespace Finora.Persistence.Context
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Expense> Expenses => Set<Expense>();
         public DbSet<Income> Incomes => Set<Income>();
+        public DbSet<Budget> Budgets => Set<Budget>();
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
