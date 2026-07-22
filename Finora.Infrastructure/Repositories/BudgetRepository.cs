@@ -1,7 +1,9 @@
 ﻿using Finora.Application.Features.Budget.Queries.GetBudgets;
+using Finora.Application.Features.Budget.Queries.GetBudgetVsActual;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
 using Finora.Persistence.Context;
+using Finora.Persistence.Seed.Categories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finora.Infrastructure.Repositories
@@ -40,6 +42,32 @@ namespace Finora.Infrastructure.Repositories
                 Year  = x.Year,
                 Month = x.Month,
             }).ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<BudgetVsActualDto>> GetBudgetVsActualAsync(Guid userId, int year, int month)
+        {
+            var expenseSummary = _context.Expenses.AsNoTracking().Where(e => e.UserId == userId && !e.IsArchived && e.ExpenseDate.Year == year && e.ExpenseDate.Month == month).GroupBy(e => e.CategoryId).Select(g => new
+            {
+                CategoryId = g.Key,
+                ActualExpense = g.Sum(e => e.Amount)
+            });
+
+            var query = from budget in _context.Budgets.AsNoTracking()
+                        where budget.UserId == userId && budget.Year == year && budget.Month == month
+                        join expense in expenseSummary
+                        on budget.CategoryId equals expense.CategoryId into expenseGroup
+
+                        from expense in expenseGroup.DefaultIfEmpty()
+
+                        select new BudgetVsActualDto
+                        {
+                            CategoryId = budget.CategoryId,
+                            CategoryName = budget.Category.Name,
+                            BudgetAmount = budget.Amount,
+                            ActualExpense = expense == null ? 0 : expense.ActualExpense
+                        };
+
+                        return await query.ToListAsync();
         }
 
         public async Task<Budget?> GetByIdAsync(Guid budgetId, Guid userId)

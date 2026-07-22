@@ -3,9 +3,11 @@ using Finora.Application.Features.Budget.Commands.DeleteBudget;
 using Finora.Application.Features.Budget.Commands.UpdateBudget;
 using Finora.Application.Features.Budget.Queries.GetBudgetById;
 using Finora.Application.Features.Budget.Queries.GetBudgets;
+using Finora.Application.Features.Budget.Queries.GetBudgetVsActual;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.AccessControl;
 
 namespace Finora.Controllers
 {
@@ -62,6 +64,18 @@ namespace Finora.Controllers
             await _mediator.Send(new DeleteBudgetCommand(id));
 
             return NoContent();
+        }
+
+        [HttpGet("budget-vs-actual")]
+        public async Task<IActionResult> GetBudgetVsAcutal([FromQuery] int year, [FromQuery] int month)
+        {
+            var result = await _mediator.Send(new GetBudgetVsActualQuery
+            {
+                Year = year,
+                Month = month
+            });
+
+            return Ok(result);
         }
     }
 }
