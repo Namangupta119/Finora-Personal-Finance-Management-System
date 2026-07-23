@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Features.Goals.Commands.CreateGoal;
+using Finora.Application.Features.Goals.Commands.DeleteGoal;
 using Finora.Application.Features.Goals.Commands.UpdateGoal;
 using Finora.Application.Features.Goals.Queries.GetAllGoals;
 using Finora.Application.Features.Goals.Queries.GetGoalById;
@@ -56,6 +57,19 @@ namespace Finora.Controllers
             var result = await _mediator.Send(command);
 
             return Ok(result);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> RemoveGoal(Guid id)
+        {
+            var command = new DeleteGoalCommand
+            {
+                Id = id
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
         }
     }
 }

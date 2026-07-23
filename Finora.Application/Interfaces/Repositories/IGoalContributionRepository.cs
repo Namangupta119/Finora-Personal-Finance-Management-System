@@ -18,5 +18,6 @@ namespace Finora.Application.Interfaces.Repositories
 
         Task<decimal> GetTotalContributionAsync(Guid goalId);
         Task<IReadOnlyList<GoalContributionDto>> GetByGoalIdAsync(Guid goalId, Guid userId);
+        Task<GoalContribution?> GetEntityByIdAsync(Guid contributionId, Guid userId);
     }
 }

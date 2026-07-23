@@ -67,5 +67,16 @@ namespace Finora.Infrastructure.Repositories
                 })
                 .ToListAsync();
         }
+
+        public async Task<GoalContribution?> GetEntityByIdAsync(Guid contributionId, Guid userId)
+        {
+            return await _context.GoalContributions
+                .Include(gc => gc.Goal)
+                .FirstOrDefaultAsync(gc =>
+                    gc.Id == contributionId &&
+                    !gc.IsArchived &&
+                    gc.Goal.UserId == userId &&
+                    !gc.Goal.IsArchived);
+        }
     }
 }
