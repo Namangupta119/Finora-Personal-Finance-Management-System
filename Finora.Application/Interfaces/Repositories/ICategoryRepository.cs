@@ -14,5 +14,6 @@ namespace Finora.Application.Interfaces.Repositories
         void Remove(Category category);
         Task SaveChangesAsync();
         Task<bool> ExistsAsync(string name, Guid userId);
+        Task<bool> ExistsByIdAsync(Guid categoryId, Guid userId);
     }
 }

@@ -56,5 +56,12 @@ namespace Finora.Infrastructure.Repositories
 
             return await _context.Categories.AnyAsync(c => !c.IsArchived && (c.UserId == null || c.UserId == userId) && c.Name == normalizedName);
         }
+        public async Task<bool> ExistsByIdAsync(Guid categoryId, Guid userId)
+        {
+            return await _context.Categories.AnyAsync(c =>
+        !c.IsArchived &&
+        c.Id == categoryId &&
+        (c.UserId == null || c.UserId == userId));
+        }
     }
 }

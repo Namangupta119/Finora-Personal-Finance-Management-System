@@ -23,6 +23,7 @@ namespace Finora.Persistence.Context
         public DbSet<Goal> Goals => Set<Goal>();
         public DbSet<GoalCategory> GoalCategories => Set<GoalCategory>();
         public DbSet<GoalContribution> GoalContributions => Set<GoalContribution>();
+        public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
