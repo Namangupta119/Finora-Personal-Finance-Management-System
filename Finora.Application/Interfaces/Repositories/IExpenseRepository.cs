@@ -18,6 +18,6 @@ namespace Finora.Application.Interfaces.Repositories
         Task<IReadOnlyList<Expense>> GetRecentExpensesAsync(Guid userId, int count);
         Task<IReadOnlyList<ExpenseAnalyticsDto>> GetExpenseAnalyticsAsync(Guid userId);
         Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyExpenseAsync(Guid userId);
-        Task SaveChangesAsync();
+        //Task SaveChangesAsync();
     }
 }

@@ -38,10 +38,10 @@ namespace Finora.Infrastructure.Repositories
             _context.Expenses.Update(expense);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveChangesAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
 
         public void Update(Expense expense)
         {
@@ -55,7 +55,7 @@ namespace Finora.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<Expense>> GetRecentExpensesAsync(Guid userId, int count)
         {
-            return await _context.Expenses.Where(x => !x.IsArchived && x.UserId != userId).OrderByDescending(x => x.ExpenseDate).Take(count).ToListAsync();
+            return await _context.Expenses.Where(x => !x.IsArchived && x.UserId == userId).OrderByDescending(x => x.ExpenseDate).Take(count).ToListAsync();
         }
 
         public async Task<IReadOnlyList<ExpenseAnalyticsDto>> GetExpenseAnalyticsAsync(Guid userId)

@@ -75,10 +75,10 @@ namespace Finora.Infrastructure.Repositories
             return await _context.Budgets.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id == budgetId && x.UserId == userId);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveChangesAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
 
         public Task UpdateAsync(Budget budget)
         {

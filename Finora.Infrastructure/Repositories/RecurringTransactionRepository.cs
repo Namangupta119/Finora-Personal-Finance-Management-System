@@ -84,4 +84,9 @@ public class RecurringTransactionRepository : IRecurringTransactionRepository
         _context.RecurringTransactions.Update(recurringTransaction);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<RecurringTransaction>> GetDueRecurringTransactionsAsync(DateTimeOffset currentDate)
+    {
+        return await _context.RecurringTransactions.Where(x => x.IsActive && x.NextDueDate <= currentDate).ToListAsync();
+    }
 }

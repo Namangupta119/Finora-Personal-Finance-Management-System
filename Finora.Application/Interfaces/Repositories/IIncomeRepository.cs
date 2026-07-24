@@ -16,6 +16,6 @@ namespace Finora.Application.Interfaces.Repositories
         Task<decimal> GetTotalIncomeAsync(Guid userId);
         Task<IReadOnlyList<Income>> GetRecentIncomesAsync(Guid userId, int count);
         Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyIncomeAsync(Guid userId);
-        Task SaveChangesAsync();
-    }
+
+        }
 }

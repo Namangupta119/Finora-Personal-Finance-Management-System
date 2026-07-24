@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -10,11 +11,13 @@ namespace Finora.Application.Categories.Commands.UpdateCategory
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateCategoryCommandHandler(ICategoryRepository categoryRepository, ICurrentUserService currentUserService)
+        public UpdateCategoryCommandHandler(ICategoryRepository categoryRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -29,7 +32,7 @@ namespace Finora.Application.Categories.Commands.UpdateCategory
             category.ColorKey = request.ColorKey;
 
             _categoryRepository.Update(category);
-            await _categoryRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return Unit.Value;
         }

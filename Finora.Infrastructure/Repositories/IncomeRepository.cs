@@ -43,10 +43,10 @@ namespace Finora.Infrastructure.Repositories
             _context.Incomes.Update(income);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveChangesAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
 
         public void Update(Income income)
         {

@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -12,11 +13,13 @@ namespace Finora.Application.Categories.Commands.DeleteCategory
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteCategoryCommandHandler(ICurrentUserService currentUserService, ICategoryRepository categoryRepository)
+        public DeleteCategoryCommandHandler(ICurrentUserService currentUserService, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
         {
             _currentUserService = currentUserService;
             _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -27,7 +30,7 @@ namespace Finora.Application.Categories.Commands.DeleteCategory
 
             category.IsArchived = true;
 
-            await _categoryRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return Unit.Value;
         }

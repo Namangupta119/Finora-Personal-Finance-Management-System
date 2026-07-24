@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -10,12 +11,14 @@ namespace Finora.Application.Features.Expenses.Commands.UpdateExpense
         private readonly IExpenseRepository _expenseRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public UpdateExpenseCommandHandler(IExpenseRepository expenseRepository,ICurrentUserService currentUserService, ICategoryRepository categoryRepository)
+        public UpdateExpenseCommandHandler(IExpenseRepository expenseRepository,ICurrentUserService currentUserService, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
         {
             _expenseRepository = expenseRepository;
             _currentUserService = currentUserService;
             _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
@@ -40,7 +43,7 @@ namespace Finora.Application.Features.Expenses.Commands.UpdateExpense
 
             _expenseRepository.Update(expense);
 
-            await _expenseRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

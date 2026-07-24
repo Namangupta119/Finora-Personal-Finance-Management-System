@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -9,11 +10,13 @@ namespace Finora.Application.Features.Incomes.Commands.DeleteIncome
     {
         private readonly IIncomeRepository _incomeRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteIncomeCommandHandler(IIncomeRepository incomeRepository, ICurrentUserService currentUserService)
+        public DeleteIncomeCommandHandler(IIncomeRepository incomeRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _incomeRepository = incomeRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(DeleteIncomeCommand request, CancellationToken cancellationToken)
@@ -27,7 +30,7 @@ namespace Finora.Application.Features.Incomes.Commands.DeleteIncome
 
             _incomeRepository.Remove(income);
 
-            await _incomeRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

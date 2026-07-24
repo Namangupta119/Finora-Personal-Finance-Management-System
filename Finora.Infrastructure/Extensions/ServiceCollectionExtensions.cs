@@ -1,11 +1,15 @@
 ﻿using Finora.Application.Common.Settings;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Security;
 using Finora.Application.Interfaces.Services;
+using Finora.Infrastructure.BackgroundServices;
+using Finora.Infrastructure.Persistence;
 using Finora.Infrastructure.Repositories;
 using Finora.Infrastructure.Security;
 using Finora.Infrastructure.Services;
 using Finora.Persistence.Seed;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +40,10 @@ namespace Finora.Infrastructure.Extensions
             services.AddScoped<IGoalCategoryRepository, GoalCategoryRepository>();
             services.AddScoped<IGoalContributionRepository, GoalContributionRepository>();
             services.AddScoped<IRecurringTransactionRepository, RecurringTransactionRepository>();
+            services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddHostedService<RecurringTransactionProcessor>();
 
             //Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();

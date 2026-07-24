@@ -1,4 +1,5 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Interfaces;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
 using MediatR;
@@ -10,11 +11,13 @@ namespace Finora.Application.Features.Budget.Commands.CreateBudget
     {
         private readonly IBudgetRepository _budgetRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateBudgetCommandHandler(IBudgetRepository budgetRepository, ICurrentUserService currentUserService)
+        public CreateBudgetCommandHandler(IBudgetRepository budgetRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _budgetRepository = budgetRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateBudgetCommand request, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ namespace Finora.Application.Features.Budget.Commands.CreateBudget
 
             await _budgetRepository.AddAsync(budget);
 
-            await _budgetRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return budget.Id;
         }

@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -9,11 +10,13 @@ namespace Finora.Application.Features.Budget.Commands.DeleteBudget
     {
         private readonly IBudgetRepository _budgetRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteBudgetCommandHandler(IBudgetRepository budgetRepository, ICurrentUserService currentUserService)
+        public DeleteBudgetCommandHandler(IBudgetRepository budgetRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _budgetRepository = budgetRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(DeleteBudgetCommand request, CancellationToken cancellationToken)
@@ -27,7 +30,7 @@ namespace Finora.Application.Features.Budget.Commands.DeleteBudget
 
              await _budgetRepository.DeleteAsync(budget);
 
-            await _budgetRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

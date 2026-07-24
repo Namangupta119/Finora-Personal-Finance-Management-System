@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
@@ -14,12 +15,14 @@ namespace Finora.Application.Features.Expenses.Commands.CreateExpense
         private readonly IExpenseRepository _expenseRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateExpenseCommandHandler(IExpenseRepository expenseRepository, ICategoryRepository categoryRepository, ICurrentUserService currentUserService)
+        public CreateExpenseCommandHandler(IExpenseRepository expenseRepository, ICategoryRepository categoryRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _expenseRepository = expenseRepository;
             _categoryRepository = categoryRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
@@ -46,7 +49,7 @@ namespace Finora.Application.Features.Expenses.Commands.CreateExpense
 
             await _expenseRepository.AddAsync(expense);
 
-            await _expenseRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return expense.Id;
         }

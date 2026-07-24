@@ -1,4 +1,5 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Interfaces;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
 using MediatR;
@@ -11,11 +12,13 @@ namespace Finora.Application.Categories.Commands.CreateCategory
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, ICurrentUserService currentUserService)
+        public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -33,8 +36,8 @@ namespace Finora.Application.Categories.Commands.CreateCategory
             };
 
             await _categoryRepository.AddAsync(category);
-
-            await _categoryRepository.SaveChangesAsync();
+             
+            await _unitOfWork.SaveChangesAsync();
 
             return category.Id;
 

@@ -1,4 +1,5 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
@@ -9,11 +10,13 @@ namespace Finora.Application.Features.Expenses.Commands.DeleteExpense
     {
         private readonly IExpenseRepository _expenseRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteExpenseCommandHandler(IExpenseRepository expenseRepository, ICurrentUserService currentUserService)
+        public DeleteExpenseCommandHandler(IExpenseRepository expenseRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
         {
             _expenseRepository = expenseRepository;
             _currentUserService = currentUserService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(DeleteExpenseCommand request, CancellationToken cancellationToken)
@@ -29,7 +32,7 @@ namespace Finora.Application.Features.Expenses.Commands.DeleteExpense
 
             _expenseRepository.Update(expense);
 
-            await _expenseRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

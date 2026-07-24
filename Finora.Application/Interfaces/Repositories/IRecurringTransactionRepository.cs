@@ -14,4 +14,5 @@ public interface IRecurringTransactionRepository
     Task<List<RecurringTransactionDto>> GetAllAsync(Guid userId);
 
     Task<RecurringTransactionDto?> GetByIdAsync(Guid id, Guid userId);
+    Task<List<RecurringTransaction>> GetDueRecurringTransactionsAsync(DateTimeOffset currentDate);
 }

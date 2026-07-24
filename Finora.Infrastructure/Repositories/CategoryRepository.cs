@@ -40,10 +40,10 @@ namespace Finora.Infrastructure.Repositories
             _context.Categories.Remove(category);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveChangesAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
 
         public void Update(Category category)
         {

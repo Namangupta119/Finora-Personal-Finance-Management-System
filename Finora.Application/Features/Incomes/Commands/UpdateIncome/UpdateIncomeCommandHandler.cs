@@ -1,18 +1,22 @@
 ﻿using Finora.Application.Exceptions;
+using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using MediatR;
+using System.Runtime.InteropServices.Marshalling;
 namespace Finora.Application.Features.Incomes.Commands.UpdateIncome
 {
     public class UpdateIncomeCommandHandler : IRequestHandler<UpdateIncomeCommand>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IIncomeRepository _incomeRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateIncomeCommandHandler(ICurrentUserService currentUserService, IIncomeRepository incomeRepository)
+        public UpdateIncomeCommandHandler(ICurrentUserService currentUserService, IIncomeRepository incomeRepository, IUnitOfWork unitOfWork)
         {
             _currentUserService = currentUserService;
             _incomeRepository = incomeRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(UpdateIncomeCommand request, CancellationToken cancellationToken)
@@ -31,7 +35,7 @@ namespace Finora.Application.Features.Incomes.Commands.UpdateIncome
 
             _incomeRepository.Update(income);
 
-            await _incomeRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

@@ -13,6 +13,6 @@ namespace Finora.Application.Interfaces.Repositories
         Task<IReadOnlyList<BudgetDto>> GetAllBudgetAsync(Guid userId);
         Task<bool> BudgetExistsAsync(Guid userId, Guid categoryId, int year, int month, Guid? excludedBudgetId = null);
         Task<IReadOnlyList<BudgetVsActualDto>> GetBudgetVsActualAsync(Guid userId, int year, int month);
-        Task SaveChangesAsync();
+        //Task SaveChangesAsync();
     }
 }

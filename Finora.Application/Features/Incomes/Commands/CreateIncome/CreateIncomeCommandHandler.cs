@@ -1,4 +1,5 @@
-﻿using Finora.Application.Interfaces.Repositories;
+﻿using Finora.Application.Interfaces;
+using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
 using MediatR;
@@ -9,11 +10,13 @@ namespace Finora.Application.Features.Incomes.Commands.CreateIncome
     {
         private readonly IIncomeRepository _incomeRepository;
         private readonly ICurrentUserService _currentUserServic;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateIncomeCommandHandler(IIncomeRepository incomeRepository, ICurrentUserService currentUserServic)
+        public CreateIncomeCommandHandler(IIncomeRepository incomeRepository, ICurrentUserService currentUserServic, IUnitOfWork unitOfWork)
         {
             _incomeRepository = incomeRepository;
             _currentUserServic = currentUserServic;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateIncomeCommand request, CancellationToken cancellationToken)
@@ -29,7 +32,7 @@ namespace Finora.Application.Features.Incomes.Commands.CreateIncome
 
             await _incomeRepository.AddAsync(income);
 
-            await _incomeRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return income.Id;
         }

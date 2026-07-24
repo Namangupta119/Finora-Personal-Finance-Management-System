@@ -12,7 +12,7 @@ namespace Finora.Application.Interfaces.Repositories
         Task AddAsync(Category category);
         void Update(Category category);
         void Remove(Category category);
-        Task SaveChangesAsync();
+        //Task SaveChangesAsync();
         Task<bool> ExistsAsync(string name, Guid userId);
         Task<bool> ExistsByIdAsync(Guid categoryId, Guid userId);
     }
