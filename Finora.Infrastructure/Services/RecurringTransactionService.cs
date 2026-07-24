@@ -4,6 +4,7 @@ using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
 using Finora.Domain.Enums;
 
+
 namespace Finora.Infrastructure.Services
 {
     public class RecurringTransactionService : IRecurringTransactionService
@@ -23,36 +24,47 @@ namespace Finora.Infrastructure.Services
 
         public async Task ProcessAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken)
         {
-            switch (recurringTransaction.TransactionType)
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            try
             {
-                case TransactionType.Income:
-                    await CreateIncomeAsync(recurringTransaction);
-                    break;
+                 switch (recurringTransaction.TransactionType)
+                 {
+                    case TransactionType.Income:
+                        await CreateIncomeAsync(recurringTransaction);
+                        break;
 
-                case TransactionType.Expense:
-                    await CreateExpenseAsync(recurringTransaction);
-                    break;
+                    case TransactionType.Expense:
+                        await CreateExpenseAsync(recurringTransaction);
+                        break;
 
-                default:
-                    throw new InvalidOperationException(
-                        $"Unsupported transaction type: {recurringTransaction.TransactionType}");
+                    default:
+                        throw new InvalidOperationException(
+                            $"Unsupported transaction type: {recurringTransaction.TransactionType}");
+                 }
+
+                var nextDueDate = CalculateNextDueDate(recurringTransaction);
+
+                if (recurringTransaction.EndDate.HasValue && nextDueDate > recurringTransaction.EndDate.Value)
+                {
+                    recurringTransaction.IsActive = false;
+                }
+                else
+                {
+                    recurringTransaction.NextDueDate = nextDueDate;
+                }
+
+                await _recurringTransactionRepository.UpdateAsync(recurringTransaction);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
             }
-
-            var nextDueDate = CalculateNextDueDate(recurringTransaction);
-
-            if (recurringTransaction.EndDate.HasValue &&
-                nextDueDate > recurringTransaction.EndDate.Value)
+            catch
             {
-                recurringTransaction.IsActive = false;
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                throw;
             }
-            else
-            {
-                recurringTransaction.NextDueDate = nextDueDate;
-            }
-
-            await _recurringTransactionRepository.UpdateAsync(recurringTransaction);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         private async Task CreateIncomeAsync(RecurringTransaction recurringTransaction)

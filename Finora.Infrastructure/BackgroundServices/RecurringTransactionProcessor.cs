@@ -3,6 +3,7 @@ using Finora.Application.Interfaces.Services;
 using Finora.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,17 +13,19 @@ namespace Finora.Infrastructure.BackgroundServices
     public class RecurringTransactionProcessor : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<RecurringTransactionProcessor> _logger;
         //private readonly IRecurringTransactionService _recurringTransactionService;
 
-        public RecurringTransactionProcessor(IServiceScopeFactory serviceScopeFactory)
+        public RecurringTransactionProcessor(IServiceScopeFactory serviceScopeFactory, ILogger<RecurringTransactionProcessor> logger)
         {
             _scopeFactory = serviceScopeFactory;
+            _logger = logger;
             //_recurringTransactionService = recurringTransactionService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Recurring Transaction Processor Started.");
+            _logger.LogInformation("Recurring Transaction Processor Started.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -34,13 +37,11 @@ namespace Finora.Infrastructure.BackgroundServices
 
                     var recurringTransactionService = scope.ServiceProvider.GetRequiredService<IRecurringTransactionService>();
 
-                    Console.WriteLine($"Checking recurring transactions at {DateTimeOffset.UtcNow}");
+                    _logger.LogInformation("Checking recurring transactions at {Time}", DateTimeOffset.UtcNow);
 
-                    var dueTransactions =
-                        await recurringTransactionRepository
-                            .GetDueRecurringTransactionsAsync(DateTimeOffset.UtcNow);
+                    var dueTransactions = await recurringTransactionRepository.GetDueRecurringTransactionsAsync(DateTimeOffset.UtcNow);
 
-                    Console.WriteLine($"Found {dueTransactions.Count} due transactions.");
+                    _logger.LogInformation("Found {Count} due transactions.", dueTransactions.Count);
 
                     foreach (var transaction in dueTransactions)
                     {
@@ -50,7 +51,7 @@ namespace Finora.Infrastructure.BackgroundServices
                         }
                         catch(Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            _logger.LogError(ex, "Failed to process recurring transaction.");
                         }
                     }
 
@@ -58,7 +59,7 @@ namespace Finora.Infrastructure.BackgroundServices
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    _logger.LogError(ex, "Recurring transaction processor failed.");
 
                     // Later:
                     // _logger.LogError(ex, "Recurring transaction processor failed.");
