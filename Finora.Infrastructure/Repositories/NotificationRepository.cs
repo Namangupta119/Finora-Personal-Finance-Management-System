@@ -21,13 +21,13 @@ namespace Finora.Infrastructure.Repositories
         public Task DeleteAsync(Notification notification)
         {
             notification.IsArchived = true;
-            _context.Notifications.Update(notification);
+            notification.UpdatedOn = DateTimeOffset.UtcNow;
             return Task.CompletedTask;
         }
 
         public async Task<Notification?> GetByIdAsync(Guid notificationId,Guid userId, CancellationToken cancellationToken)
         {
-            return await _context.Notifications.FirstOrDefaultAsync(x => x.Id == notificationId && x.UserId == userId && !x.IsArchived);
+            return await _context.Notifications.FirstOrDefaultAsync(x => x.Id == notificationId && x.UserId == userId && !x.IsArchived, cancellationToken);
         }
 
         public async Task<List<Notification>> GetByUserIdAsync(Guid userId,int pageNumber,int pageSize,CancellationToken cancellationToken)
