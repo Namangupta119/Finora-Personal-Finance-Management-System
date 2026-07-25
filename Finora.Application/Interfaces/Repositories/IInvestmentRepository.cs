@@ -19,5 +19,6 @@ namespace Finora.Application.Interfaces.Repositories
 
         Task<int> GetTotalCountAsync(Guid userId,CancellationToken cancellationToken);
         Task<List<Investment>> GetAllByUserIdAsync(Guid userId,CancellationToken cancellationToken);
+        Task<decimal> GetCurrentPortfolioValueAsync(Guid userId,CancellationToken cancellationToken);
     }
 }

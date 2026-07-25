@@ -68,5 +68,11 @@ namespace Finora.Infrastructure.Repositories
                 .Where(x => x.UserId == userId && !x.IsArchived)
                 .ToListAsync(cancellationToken);
         }
+        public async Task<decimal> GetCurrentPortfolioValueAsync(Guid userId,CancellationToken cancellationToken)
+        {
+            return await _context.Investments
+                .Where(x => x.UserId == userId && !x.IsArchived)
+                .SumAsync(x => (decimal?)(x.Quantity * x.CurrentPrice), cancellationToken) ?? 0;
+        }
     }
 }

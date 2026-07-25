@@ -2,6 +2,7 @@
 using Finora.Application.Features.Dashboard.Queries;
 using Finora.Application.Features.Dashboard.Queries.GetExpenseAnalytics;
 using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Features.Dashboard.Queries.GetNetWorthDashboard;
 using Finora.Application.Features.Dashboard.Queries.GetRecentTransactions;
 using Finora.Persistence.Context;
 using MediatR;
@@ -50,6 +51,14 @@ namespace Finora.Controllers
         public async Task<IActionResult> GetMonthlyIncomeExpense()
         {
             var result = await _mediator.Send(new GetMonthlyIncomeExpenseQuery());
+
+            return Ok(result);
+        }
+
+        [HttpGet("net-worth")]
+        public async Task<IActionResult> GetNetWorth()
+        {
+            var result = await _mediator.Send(new GetNetWorthDashboardQuery());
 
             return Ok(result);
         }

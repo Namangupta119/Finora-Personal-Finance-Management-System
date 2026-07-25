@@ -1,5 +1,7 @@
 ﻿using Finora.Application.Features.Dashboard.Queries.GetExpenseAnalytics;
 using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Features.Reports.Queries.GetCategoryWiseExpenseReport;
+using Finora.Application.Features.Reports.Queries.GetMonthlyExpenseReport;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
 using Finora.Persistence.Context;
@@ -84,6 +86,89 @@ namespace Finora.Infrastructure.Repositories
         public async Task<decimal> GetTotalExpenseAsync(Guid userId, Guid categoryId, int year, int month)
         {
             return await _context.Expenses.AsNoTracking().Where(x => x.UserId == userId && x.CategoryId == categoryId && !x.IsArchived && x.ExpenseDate.Year == year && x.ExpenseDate.Month == month).SumAsync(x => (decimal?)x.Amount) ?? 0;
+        }
+        public async Task<decimal> GetTotalExpenseAsync(Guid userId,CancellationToken cancellationToken)
+        {
+            return await _context.Expenses
+                .Where(x => x.UserId == userId && !x.IsArchived)
+                .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0;
+        }
+
+        public async Task<List<Expense>> GetExpensesByYearAsync(Guid userId,int year,CancellationToken cancellationToken)
+        {
+            var startDate = new DateTimeOffset(year, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            var endDate = startDate.AddYears(1);
+
+            return await _context.Expenses
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.ExpenseDate >= startDate &&
+                    x.ExpenseDate < endDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<MonthlyExpenseReportDto>> GetMonthlyExpenseReportAsync(Guid userId,int year,CancellationToken cancellationToken)
+        {
+            return await _context.Expenses.AsNoTracking().Where(x => x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.ExpenseDate.Year == year)
+            .GroupBy(x => x.ExpenseDate.Month)
+            .Select(g => new MonthlyExpenseReportDto
+            {
+                Month = g.Key,
+                TotalExpense = g.Sum(x => x.Amount)
+            })
+            .OrderBy(x => x.Month)
+            .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<CategoryWiseExpenseReportDto>> GetCategoryWiseExpenseReportAsync(Guid userId,int year,CancellationToken cancellationToken)
+        {
+            return await _context.Expenses
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.ExpenseDate.Year == year)
+                .GroupBy(x => new
+                {
+                    x.CategoryId,
+                    x.Category.Name
+                })
+                .Select(g => new CategoryWiseExpenseReportDto
+                {
+                    CategoryId = g.Key.CategoryId,
+                    CategoryName = g.Key.Name,
+                    TotalExpense = g.Sum(x => x.Amount)
+                })
+                .OrderByDescending(x => x.TotalExpense)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<decimal> GetTotalExpenseByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken)
+        {
+            return await _context.Expenses
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.ExpenseDate >= startDate &&
+                    x.ExpenseDate <= endDate)
+                .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0;
+        }
+
+        public async Task<int> GetExpenseTransactionCountByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken)
+        {
+            return await _context.Expenses
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.ExpenseDate >= startDate &&
+                    x.ExpenseDate <= endDate)
+                .CountAsync(cancellationToken);
         }
     }
 }

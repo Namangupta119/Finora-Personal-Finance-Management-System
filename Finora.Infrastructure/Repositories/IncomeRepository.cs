@@ -1,5 +1,6 @@
 ﻿using Finora.Application.Features.Dashboard.GetRecentTransactions;
 using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Features.Reports.Queries.GetMonthlyIncomeReport;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
 using Finora.Persistence.Context;
@@ -80,6 +81,55 @@ namespace Finora.Infrastructure.Repositories
         public async Task<bool> ExistsRecurringIncomeAsync(Guid recurringTransactionId,DateTimeOffset occurrenceDate,CancellationToken cancellationToken = default)
         {
             return await _context.Incomes.AnyAsync(x => x.RecurringTransactionId == recurringTransactionId && x.RecurringOccurrenceDate == occurrenceDate, cancellationToken);
+        }
+
+        public async Task<decimal> GetTotalIncomeAsync(Guid userId,CancellationToken cancellationToken)
+        {
+            return await _context.Incomes
+                .Where(x => x.UserId == userId && !x.IsArchived)
+                .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0;
+        }
+
+        public async Task<List<MonthlyIncomeReportDto>> GetMonthlyIncomeReportAsync(Guid userId,int year,CancellationToken cancellationToken)
+        {
+            return await _context.Incomes
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.IncomeDate.Year == year)
+                .GroupBy(x => x.IncomeDate.Month)
+                .Select(g => new MonthlyIncomeReportDto
+                {
+                    Month = g.Key,
+                    TotalIncome = g.Sum(x => x.Amount)
+                })
+                .OrderBy(x => x.Month)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<decimal> GetTotalIncomeByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken)
+        {
+            return await _context.Incomes
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.IncomeDate >= startDate &&
+                    x.IncomeDate <= endDate)
+                .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0;
+        }
+
+        public async Task<int> GetIncomeTransactionCountByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken)
+        {
+            return await _context.Incomes
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == userId &&
+                    !x.IsArchived &&
+                    x.IncomeDate >= startDate &&
+                    x.IncomeDate <= endDate)
+                .CountAsync(cancellationToken);
         }
     }
 }

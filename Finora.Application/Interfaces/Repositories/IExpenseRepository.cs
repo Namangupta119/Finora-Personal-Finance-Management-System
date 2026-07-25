@@ -1,5 +1,7 @@
 ﻿using Finora.Application.Features.Dashboard.Queries.GetExpenseAnalytics;
 using Finora.Application.Features.Dashboard.Queries.GetMonthlyIncomeExpense;
+using Finora.Application.Features.Reports.Queries.GetCategoryWiseExpenseReport;
+using Finora.Application.Features.Reports.Queries.GetMonthlyExpenseReport;
 using Finora.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,5 +23,11 @@ namespace Finora.Application.Interfaces.Repositories
         //Task SaveChangesAsync();
         Task<bool> ExistsRecurringExpenseAsync(Guid recurringTransactionId, DateTimeOffset occurrenceDate, CancellationToken cancellationToken = default);
         Task<decimal> GetTotalExpenseAsync(Guid userId,Guid categoryId,int year,int month);
+        Task<decimal> GetTotalExpenseAsync(Guid userId,CancellationToken cancellationToken);
+        Task<List<Expense>> GetExpensesByYearAsync(Guid userId,int year,CancellationToken cancellationToken);
+        Task<List<MonthlyExpenseReportDto>> GetMonthlyExpenseReportAsync(Guid userId,int year,CancellationToken cancellationToken);
+        Task<List<CategoryWiseExpenseReportDto>> GetCategoryWiseExpenseReportAsync(Guid userId,int year,CancellationToken cancellationToken);
+        Task<decimal> GetTotalExpenseByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken);
+        Task<int> GetExpenseTransactionCountByDateRangeAsync(Guid userId,DateTimeOffset startDate,DateTimeOffset endDate,CancellationToken cancellationToken);
     }
 }
