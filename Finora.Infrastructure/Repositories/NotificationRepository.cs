@@ -1,5 +1,6 @@
 ﻿using Finora.Application.Interfaces.Repositories;
 using Finora.Domain.Entities;
+using Finora.Domain.Enums;
 using Finora.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,15 @@ namespace Finora.Infrastructure.Repositories
         public async Task<int> GetTotalCountAsync(Guid userId, CancellationToken cancellationToken)
         {
             return await _context.Notifications.CountAsync(x => x.UserId == userId && !x.IsArchived, cancellationToken);
+        }
+        public async Task<bool> NotificationExisitsAsync(Guid userId,NotificationType type,Guid referenceId,CancellationToken cancellationToken)
+        {
+            return await _context.Notifications.AnyAsync(x =>
+                x.UserId == userId &&
+                x.Type == type &&
+                x.ReferenceId == referenceId &&
+                !x.IsArchived,
+                cancellationToken);
         }
     }
 }

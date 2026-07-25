@@ -3,6 +3,7 @@ using Finora.Application.Interfaces;
 using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
+using Finora.Domain.Enums;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,17 @@ namespace Finora.Application.Features.Expenses.Commands.CreateExpense
         private readonly ICategoryRepository _categoryRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IBudgetRepository _budgetRepository;
+        private readonly INotificationRepository _notificationRepository;
 
-        public CreateExpenseCommandHandler(IExpenseRepository expenseRepository, ICategoryRepository categoryRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
+        public CreateExpenseCommandHandler(IExpenseRepository expenseRepository, ICategoryRepository categoryRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IBudgetRepository budgetRepository, INotificationRepository notificationRepository)
         {
             _expenseRepository = expenseRepository;
             _categoryRepository = categoryRepository;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
+            _budgetRepository = budgetRepository;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<Guid> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
@@ -49,9 +54,44 @@ namespace Finora.Application.Features.Expenses.Commands.CreateExpense
 
             await _expenseRepository.AddAsync(expense);
 
-            await _unitOfWork.SaveChangesAsync();
+            var budget = await _budgetRepository.GetBudgetByCategoryAndMonthAsync(
+                userId,
+                request.CategoryId,
+                request.ExpenseDate.Year,
+                request.ExpenseDate.Month);
+
+
+            if (budget is not null)
+            {
+                var totalExpense = await _expenseRepository.GetTotalExpenseAsync(
+                    userId,
+                    request.CategoryId,
+                    request.ExpenseDate.Year,
+                    request.ExpenseDate.Month);
+
+                // Current expense abhi database me save nahi hui hai.
+                totalExpense += request.Amount;
+
+                if (budget.Amount > 0 && totalExpense > budget.Amount)
+                {
+                    var notification = new Notification
+                    {
+                        UserId = userId,
+                        Title = "Budget Exceeded",
+                        Message = $"You have exceeded your {category.Name} budget. Budget: ₹{budget.Amount:N2}, Spent: ₹{totalExpense:N2}.",
+                        IsRead = false,
+                        IsArchived = false,
+                        ActionUrl = "/budgets"
+                    };
+
+                    await _notificationRepository.AddAsync(notification);
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return expense.Id;
+
         }
     }
 }

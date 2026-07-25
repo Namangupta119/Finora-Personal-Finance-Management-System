@@ -22,5 +22,8 @@ namespace Finora.Domain.Entities
 
         public string? ActionUrl { get; set; }
         public bool IsArchived { get; set; }
+        public Guid? ReferenceId { get; set; }
+
+        public string? ReferenceType { get; set; }
     }
 }

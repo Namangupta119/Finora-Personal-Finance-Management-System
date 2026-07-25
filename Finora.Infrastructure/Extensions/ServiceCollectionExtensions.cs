@@ -43,6 +43,7 @@ namespace Finora.Infrastructure.Extensions
             services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IInvestmentRepository, InvestmentRepository>();
 
             services.AddHostedService<RecurringTransactionProcessor>();
 

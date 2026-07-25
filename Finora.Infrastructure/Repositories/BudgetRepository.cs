@@ -85,5 +85,9 @@ namespace Finora.Infrastructure.Repositories
             _context.Budgets.Update(budget);
             return Task.CompletedTask;
         }
+        public async Task<Budget?> GetBudgetByCategoryAndMonthAsync(Guid userId, Guid categoryId, int year, int month)
+        {
+            return await _context.Budgets.FirstOrDefaultAsync(x => x.UserId == userId && x.CategoryId == categoryId && x.Year == year && x.Month == month && !x.IsDeleted);
+        }
     }
 }

@@ -20,5 +20,6 @@ namespace Finora.Application.Interfaces.Repositories
         Task<IReadOnlyList<MonthlyAmountDto>> GetMonthlyExpenseAsync(Guid userId);
         //Task SaveChangesAsync();
         Task<bool> ExistsRecurringExpenseAsync(Guid recurringTransactionId, DateTimeOffset occurrenceDate, CancellationToken cancellationToken = default);
+        Task<decimal> GetTotalExpenseAsync(Guid userId,Guid categoryId,int year,int month);
     }
 }

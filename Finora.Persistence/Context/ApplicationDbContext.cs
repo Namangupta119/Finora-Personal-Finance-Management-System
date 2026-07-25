@@ -21,6 +21,7 @@ namespace Finora.Persistence.Context
         public DbSet<Income> Incomes => Set<Income>();
         public DbSet<Budget> Budgets => Set<Budget>();
         public DbSet<Goal> Goals => Set<Goal>();
+        public DbSet<Investment> Investments => Set<Investment>();
         public DbSet<GoalCategory> GoalCategories => Set<GoalCategory>();
         public DbSet<GoalContribution> GoalContributions => Set<GoalContribution>();
         public DbSet<RecurringTransaction> RecurringTransactions { get; set; }

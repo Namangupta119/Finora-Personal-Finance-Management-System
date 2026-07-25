@@ -80,5 +80,10 @@ namespace Finora.Infrastructure.Repositories
         {
             return await _context.Expenses.AnyAsync(x => x.RecurringTransactionId == recurringTransactionId && x.RecurringOccurrenceDate == occurrenceDate, cancellationToken);
         }
+
+        public async Task<decimal> GetTotalExpenseAsync(Guid userId, Guid categoryId, int year, int month)
+        {
+            return await _context.Expenses.AsNoTracking().Where(x => x.UserId == userId && x.CategoryId == categoryId && !x.IsArchived && x.ExpenseDate.Year == year && x.ExpenseDate.Month == month).SumAsync(x => (decimal?)x.Amount) ?? 0;
+        }
     }
 }

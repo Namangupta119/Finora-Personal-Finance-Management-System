@@ -1,4 +1,5 @@
 ﻿using Finora.Domain.Entities;
+using Finora.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,5 +19,6 @@ namespace Finora.Application.Interfaces.Repositories
 
         Task DeleteAsync(Notification notification);
         Task<int> GetTotalCountAsync(Guid userId, CancellationToken cancellationToken);
+        Task<bool> NotificationExisitsAsync(Guid userId, NotificationType type, Guid referenceId, CancellationToken cancellationToken);
     }
 }
