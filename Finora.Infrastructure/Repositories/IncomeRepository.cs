@@ -77,5 +77,9 @@ namespace Finora.Infrastructure.Repositories
             }).OrderBy(x => x.Year).ThenBy(x => x.Month).ToListAsync();
         }
 
+        public async Task<bool> ExistsRecurringIncomeAsync(Guid recurringTransactionId,DateTimeOffset occurrenceDate,CancellationToken cancellationToken = default)
+        {
+            return await _context.Incomes.AnyAsync(x => x.RecurringTransactionId == recurringTransactionId && x.RecurringOccurrenceDate == occurrenceDate, cancellationToken);
+        }
     }
 }

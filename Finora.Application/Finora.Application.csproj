@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Finora.Domain\Finora.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Notifications\Mappings\" />
+  </ItemGroup>
+
 </Project>

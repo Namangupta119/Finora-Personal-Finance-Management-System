@@ -38,11 +38,6 @@ namespace Finora.Infrastructure.Repositories
             _context.Expenses.Update(expense);
         }
 
-        //public async Task SaveChangesAsync()
-        //{
-        //    await _context.SaveChangesAsync();
-        //}
-
         public void Update(Expense expense)
         {
             _context.Expenses.Update(expense);
@@ -79,6 +74,11 @@ namespace Finora.Infrastructure.Repositories
                 Month = g.Key.Month,
                 TotalAmount = g.Sum(x => x.Amount)
             }).OrderBy(x => x.Year).ThenBy(x => x.Month).ToListAsync();
+        }
+
+        public async Task<bool> ExistsRecurringExpenseAsync(Guid recurringTransactionId, DateTimeOffset occurrenceDate, CancellationToken cancellationToken = default)
+        {
+            return await _context.Expenses.AnyAsync(x => x.RecurringTransactionId == recurringTransactionId && x.RecurringOccurrenceDate == occurrenceDate, cancellationToken);
         }
     }
 }

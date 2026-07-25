@@ -41,7 +41,6 @@ namespace Finora.Infrastructure.Persistence
                 await _transaction.DisposeAsync();
                 _transaction = null;
             }
-            new NotImplementedException();
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

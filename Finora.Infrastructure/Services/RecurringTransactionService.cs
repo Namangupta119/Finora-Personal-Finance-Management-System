@@ -3,6 +3,7 @@ using Finora.Application.Interfaces.Repositories;
 using Finora.Application.Interfaces.Services;
 using Finora.Domain.Entities;
 using Finora.Domain.Enums;
+using Microsoft.Extensions.Logging;
 
 
 namespace Finora.Infrastructure.Services
@@ -13,13 +14,14 @@ namespace Finora.Infrastructure.Services
         private readonly IExpenseRepository _expenseRepository;
         private readonly IRecurringTransactionRepository _recurringTransactionRepository;
         private readonly IUnitOfWork _unitOfWork;
-
-        public RecurringTransactionService(IIncomeRepository incomeRepository, IExpenseRepository expenseRepository, IRecurringTransactionRepository recurringTransactionRepository, IUnitOfWork unitOfWork)
+        private readonly ILogger<RecurringTransactionService> _logger;
+        public RecurringTransactionService(IIncomeRepository incomeRepository, IExpenseRepository expenseRepository, IRecurringTransactionRepository recurringTransactionRepository, IUnitOfWork unitOfWork, ILogger<RecurringTransactionService> logger)
         {
             _incomeRepository = incomeRepository;
             _expenseRepository = expenseRepository;
             _recurringTransactionRepository = recurringTransactionRepository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task ProcessAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken)
@@ -31,11 +33,38 @@ namespace Finora.Infrastructure.Services
                  switch (recurringTransaction.TransactionType)
                  {
                     case TransactionType.Income:
-                        await CreateIncomeAsync(recurringTransaction);
+
+                        var incomeExists =
+                            await _incomeRepository.ExistsRecurringIncomeAsync(
+                                recurringTransaction.Id,
+                                recurringTransaction.NextDueDate,
+                                cancellationToken);
+
+                        if (!incomeExists)
+                        {
+                            await CreateIncomeAsync(recurringTransaction);
+                        }
+                        else{
+                            _logger.LogInformation("Recurring income already exists for transaction {TransactionId}. Skipping income creation.", recurringTransaction.Id);
+                        }
                         break;
 
                     case TransactionType.Expense:
-                        await CreateExpenseAsync(recurringTransaction);
+
+                        var expenseExists =
+                            await _expenseRepository.ExistsRecurringExpenseAsync(
+                                recurringTransaction.Id,
+                                recurringTransaction.NextDueDate,
+                                cancellationToken);
+
+                        if (!expenseExists)
+                        {
+                            await CreateExpenseAsync(recurringTransaction);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Recurring expense already exists for transaction {TransactionId}. Skipping expense creation.", recurringTransaction.Id);
+                        }
                         break;
 
                     default:
@@ -76,6 +105,10 @@ namespace Finora.Infrastructure.Services
                 Amount = recurringTransaction.Amount,
                 IncomeDate = recurringTransaction.NextDueDate,
                 UserId = recurringTransaction.UserId,
+
+                RecurringTransactionId = recurringTransaction.Id,
+                RecurringOccurrenceDate = recurringTransaction.NextDueDate,
+
                 IsArchived = false
             };
 
@@ -92,6 +125,10 @@ namespace Finora.Infrastructure.Services
                 ExpenseDate = recurringTransaction.NextDueDate,
                 CategoryId = recurringTransaction.CategoryId,
                 UserId = recurringTransaction.UserId,
+
+                RecurringTransactionId = recurringTransaction.Id,
+                RecurringOccurrenceDate = recurringTransaction.NextDueDate,
+                
                 IsArchived = false
             };
 

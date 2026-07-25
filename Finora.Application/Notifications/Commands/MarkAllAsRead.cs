@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Finora.Domain.Entities
+namespace Finora.Application.Notifications.Commands
 {
-    internal class Notfications
+    internal class MarkAllAsRead
     {
     }
 }

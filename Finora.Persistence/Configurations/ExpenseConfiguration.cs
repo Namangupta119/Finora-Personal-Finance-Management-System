@@ -25,6 +25,12 @@ namespace Finora.Persistence.Configurations
 
             builder.Property(x => x.IsArchived).HasDefaultValue(false);
 
+            builder.HasIndex(x => new
+            {
+                x.RecurringTransactionId,
+                x.RecurringOccurrenceDate
+            }).IsUnique().HasFilter("[RecurringTransactionId] IS NOT NULL");
+
             builder.HasOne(x => x.Category).WithMany().HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);

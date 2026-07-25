@@ -17,6 +17,8 @@ namespace Finora.Domain.Entities
         public Guid UserId { get; set; }
         public User User { get; set; } = default!;
         public bool IsArchived { get; set; }
+        public Guid? RecurringTransactionId { get; set; }
+        public DateTimeOffset? RecurringOccurrenceDate { get; set; }
 
     }
 }
