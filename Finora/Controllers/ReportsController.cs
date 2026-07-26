@@ -1,4 +1,8 @@
 ﻿
+using Finora.Application.Features.Reports.Queries.ExportCategoryWiseExpenseReport;
+using Finora.Application.Features.Reports.Queries.ExportDateRangeFinancialSummary;
+using Finora.Application.Features.Reports.Queries.ExportMonthlyExpenseReport;
+using Finora.Application.Features.Reports.Queries.ExportMonthlyIncomeReport;
 using Finora.Application.Features.Reports.Queries.GetCategoryWiseExpenseReport;
 using Finora.Application.Features.Reports.Queries.GetDateRangeFinancialSummary;
 using Finora.Application.Features.Reports.Queries.GetInvestmentReport;
@@ -60,6 +64,50 @@ namespace Finora.Controllers
             var result = await _mediator.Send(query);
 
             return Ok(result);
+        }
+
+        [HttpGet("monthly-expenses/export")]
+        public async Task<IActionResult> ExportMonthlyExpenseReport([FromQuery] ExportMonthlyExpenseReportQuery query)
+        {
+            var file = await _mediator.Send(query);
+
+            return File(
+                file,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"MonthlyExpenseReport-{query.Year}.xlsx");
+        }
+
+        [HttpGet("monthly-income/export")]
+        public async Task<IActionResult> ExportMonthlyIncomeReport([FromQuery] ExportMonthlyIncomeReportQuery query)
+        {
+            var file = await _mediator.Send(query);
+
+            return File(
+                file,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"MonthlyIncomeReport-{query.Year}.xlsx");
+        }
+
+        [HttpGet("category-wise-expenses/export")]
+        public async Task<IActionResult> ExportCategoryWiseExpenseReport([FromQuery] ExportCategoryWiseExpenseReportQuery query)
+        {
+            var file = await _mediator.Send(query);
+
+            return File(
+                file,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"CategoryWiseExpenseReport-{query.Year}.xlsx");
+        }
+
+        [HttpGet("date-range-summary/export")]
+        public async Task<IActionResult> ExportDateRangeFinancialSummary([FromQuery] ExportDateRangeFinancialSummaryQuery query)
+        {
+            var file = await _mediator.Send(query);
+
+            return File(
+                file,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"DateRangeFinancialSummary-{query.StartDate:yyyyMMdd}-{query.EndDate:yyyyMMdd}.xlsx");
         }
     }
 }

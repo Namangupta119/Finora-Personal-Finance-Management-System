@@ -44,6 +44,8 @@ namespace Finora.Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IInvestmentRepository, InvestmentRepository>();
+            services.AddScoped<IExcelExportService, ExcelExportService>();
+            //services.AddScoped<IPdfExportService, PdfExportService>();
 
             services.AddHostedService<RecurringTransactionProcessor>();
 
