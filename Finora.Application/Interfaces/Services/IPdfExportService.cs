@@ -6,8 +6,9 @@ namespace Finora.Application.Interfaces.Services
 {
     public interface IPdfExportService
     {
-        byte[] Export<T>(
+        byte[] ExportToPdf<T>(
             IEnumerable<T> data,
-            string title);
+            string reportTitle,
+            bool isLandscape = false);
     }
 }

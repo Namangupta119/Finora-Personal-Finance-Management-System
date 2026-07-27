@@ -1,10 +1,11 @@
+using Finora.Application;
+using Finora.Application.Common.Models;
 using Finora.Application.Common.Settings;
-using Finora.Persistence.Context;
-using Microsoft.EntityFrameworkCore;
 using Finora.Infrastructure.Extensions;
 using Finora.Middleware;
+using Finora.Persistence.Context;
 using Finora.Persistence.Seed;
-using Finora.Application;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,8 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 var app = builder.Build();
 
