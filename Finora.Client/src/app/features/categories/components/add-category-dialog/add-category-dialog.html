@@ -1,0 +1,81 @@
+<div class="p-6">
+  <!-- Header -->
+
+  <h2 class="text-3xl font-bold text-slate-800">Add New Category</h2>
+
+  <p class="mt-2 text-slate-500">Create a new income or expense category.</p>
+
+  <!-- Form -->
+
+<form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="mt-8 space-y-6">
+    <!-- Category Name -->
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label> Category Name </mat-label>
+
+      <input matInput placeholder="Enter category name" formControlName="name" />
+    </mat-form-field>
+   
+
+    <!-- Icon -->
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label> Icon </mat-label>
+
+<mat-select formControlName="iconKey">
+            <mat-option value="shopping_cart"> Shopping </mat-option>
+
+        <mat-option value="restaurant"> Food </mat-option>
+
+        <mat-option value="payments"> Salary </mat-option>
+
+        <mat-option value="trending_up"> Investment </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full">
+
+  <mat-label>Description</mat-label>
+
+  <textarea
+      matInput
+      rows="3"
+      formControlName="description">
+  </textarea>
+
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="w-full">
+
+  <mat-label>Color</mat-label>
+
+  <mat-select formControlName="colorKey">
+
+      <mat-option value="red">Red</mat-option>
+
+      <mat-option value="blue">Blue</mat-option>
+
+      <mat-option value="green">Green</mat-option>
+
+      <mat-option value="yellow">Yellow</mat-option>
+
+  </mat-select>
+
+</mat-form-field>
+  <!-- Footer -->
+
+  <div class="mt-8 flex justify-end gap-3">
+    <button
+      class="rounded-xl border border-slate-300 px-5 py-2 font-medium text-slate-700 transition hover:bg-slate-100"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      [disabled]="categoryForm.invalid"
+      class="rounded-xl bg-blue-600 px-5 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
+      Save Category
+    </button>
+  </div>
+    </form>
+</div>

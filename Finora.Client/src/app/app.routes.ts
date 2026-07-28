@@ -27,19 +27,19 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
 
-      // {
-      //   path: 'dashboard',
-      //   loadComponent: () =>
-      //     import('./features/dashboard/pages/dashboard/dashboard.component')
-      //       .then(c => c.DashboardComponent)
-      // },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(c => c.DashboardComponent)
+      },
 
-      // {
-      //   path: 'categories',
-      //   loadComponent: () =>
-      //     import('./features/categories/pages/categories/categories.component')
-      //       .then(c => c.CategoriesComponent)
-      // }
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('./features/categories/pages/categories/categories')
+            .then(c => c.CategoriesComponent)
+      }
 
     ]
   },

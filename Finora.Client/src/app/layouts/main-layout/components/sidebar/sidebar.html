@@ -21,7 +21,9 @@
 
       <a
         [routerLink]="item.route"
+        routerLinkActive="active-link"
         [routerLinkActiveOptions]="{ exact: true }"
+        
         class="sidebar-item">
 
         <mat-icon>{{ item.icon }}</mat-icon>

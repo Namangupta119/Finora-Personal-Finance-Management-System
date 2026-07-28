@@ -40,7 +40,7 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly storageService = inject(StorageService)
-  // private readonly router = inject(Router);
+  private readonly router = inject(Router);   // ✅ Uncomment this
 
   readonly hidePassword = signal(true);
 
@@ -90,7 +90,7 @@ export class LoginComponent {
         console.log(response);
         
         this.isLoading.set(false);
-        // this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard']);
         
       },
 
