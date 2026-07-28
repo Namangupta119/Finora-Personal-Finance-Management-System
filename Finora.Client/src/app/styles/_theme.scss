@@ -1,0 +1,13 @@
+@use "./variables" as *;
+
+body{
+
+    background:$background;
+
+    color:$text-primary;
+
+    font-family:
+    Roboto,
+    sans-serif;
+
+}

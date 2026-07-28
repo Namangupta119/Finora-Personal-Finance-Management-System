@@ -1,0 +1,26 @@
+
+
+:host {
+    display: block;
+    height: 100%;
+}
+
+.sidebar-item {
+
+    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700;
+
+    transition: all .2s ease;
+
+}
+
+.sidebar-item:hover {
+
+    @apply bg-slate-100;
+
+}
+
+.active-link {
+
+    @apply bg-blue-50 text-blue-600 font-semibold;
+
+}

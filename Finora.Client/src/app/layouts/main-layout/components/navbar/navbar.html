@@ -1,0 +1,64 @@
+<header
+  class="flex h-20 items-center justify-between border-b border-gray-200 bg-white px-6 mt-4 shadow-sm">
+
+  <!-- Left Section -->
+
+  <div class="flex items-center gap-4">
+
+    <button
+      type="button"
+      (click)="toggleSidebar()"
+      class="rounded-lg p-2 transition hover:bg-gray-100">
+
+      <mat-icon>menu</mat-icon>
+
+    </button>
+
+    <h1 class="text-xl font-semibold text-gray-800">
+
+      Dashboard
+
+    </h1>
+
+  </div>
+
+  <!-- Right Section -->
+
+  <div class="flex items-center gap-4">
+
+    <button
+      type="button"
+      class="rounded-lg p-2 transition hover:bg-gray-100">
+
+      <mat-icon>notifications</mat-icon>
+
+    </button>
+
+    <button
+      type="button"
+      class="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-gray-100">
+
+      <div
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+
+        NG
+
+      </div>
+
+      <div class="text-left">
+
+        <p class="text-sm font-medium text-gray-800">
+          Naman
+        </p>
+
+        <p class="text-xs text-gray-500">
+          Welcome Back
+        </p>
+
+      </div>
+
+    </button>
+
+  </div>
+
+</header>
